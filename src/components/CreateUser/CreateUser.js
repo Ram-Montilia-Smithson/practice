@@ -14,13 +14,14 @@ const CreateUser = () => {
     const user = {
       username: username
     }
+    
     console.log(user);
 
-    axios.post('http://localhost:5000/users/add', {user})
-      .then(function (response) {
-        console.log(response);
+    axios.post('http://localhost:5000/users/add', user)
+      .then((response) => {
+        console.log(response.data);
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error);
       });
       
