@@ -1,40 +1,22 @@
 import React, { useState } from 'react';
 import axios from "axios"
 
-const CreateUser = () => {
+export default function CreateUser() {
   
   const [username, setUsername] = useState("")
-
-  const onChangeUsername = (e) => {
-    setUsername(e.target.value)
-  }
+  const [message, setMessage] = useState("")
 
   const onSubmit = (e) => {
     e.preventDefault()
-    const user = {
-      username: username
-    }
-    
-    console.log(user);
-
-    axios.post('http://localhost:5000/users/add', user)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-      
-    setUsername("")
-
+    axios.post('http://localhost:5000/users/add', { username })
+      .then((response) => setMessage(response.data))
+      .catch((error) => error.response.data ? setMessage(error.response.data) : setMessage(error.message));
   }
   
   return (
     <div>
       <h3>Create New User</h3>
-      <form
-        onSubmit={(e) => onSubmit(e)}
-      >
+      <form onSubmit={onSubmit}>
         <div className='form-group'>
           <label>UserName: </label>
           <input
@@ -42,21 +24,19 @@ const CreateUser = () => {
             required
             className='form-control'
             value={username}
-            onChange={onChangeUsername}
+            onChange={(e) => setUsername(e.target.value)}
+            onFocus={() => setMessage("")}
           />
         </div>
-
-        <div>
-          <input type="submit" value="Create Exercise Log" className="btn btn-primary" />
+        <div className='mt-3'>
+          <input
+            type="submit"
+            value="Create User"
+            className="btn btn-primary"
+          />
         </div>
-
       </form>
+      <h3 className='mt-3'>{message}</h3>
     </div>
   )
 };
-
-CreateUser.propTypes = {};
-
-CreateUser.defaultProps = {};
-
-export default CreateUser;

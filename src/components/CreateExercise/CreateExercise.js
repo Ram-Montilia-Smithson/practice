@@ -7,10 +7,6 @@ export default class CreateExercise extends Component{
   constructor(props) {
     super(props);
 
-    this.onChangeUsername = this.onChangeUsername.bind(this)
-    this.onChangeDescription = this.onChangeDescription.bind(this)
-    this.onChangeDuration = this.onChangeDuration.bind(this)
-    this.onChangeDate = this.onChangeDate.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
 
     this.state = {
@@ -18,68 +14,39 @@ export default class CreateExercise extends Component{
       description: '',
       duration: 0,
       date: new Date(),
-      users: []
+      users: [],
+      message: ''
     }
   }
 
   componentDidMount() {
     axios.get('http://localhost:5000/users')
       .then((response) => {
-        if (response.data.length > 0) {
+        if (response.data.length) {
           this.setState({
             users: response.data.map(user => user.username),
-            user: response.data[0].username
+            username: response.data[0].username
           })
         }
       })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value
-    })
-  }
-
-  onChangeDescription(e) {
-    this.setState({
-      description: e.target.value
-    })
-  }
-
-  onChangeDuration(e) {
-    this.setState({
-      duration: e.target.value
-    })
-  }
-
-  onChangeDate(date) {
-    this.setState({
-      date: date
-    })
+      .catch((error) => this.setState({message: error.message}));
   }
 
   onSubmit(e) {
     e.preventDefault();
     const exercise = {
-      username: this.state.user,
+      username: this.state.username,
       description: this.state.description,
       duration: this.state.duration,
       date: this.state.date,
     }
 
-    console.log(exercise);
-
     axios.post('http://localhost:5000/exercises/add', exercise)
       .then((response) => {
-        console.log(response.data);
+        this.setState({ message: response.data })
+        window.location = '/'
       })
-      .catch((error) => {
-        console.log(error);
-      });
-    // window.location = '/'
+      .catch((error) => this.setState({message: error.message}));
   }
 
   render() {
@@ -90,18 +57,15 @@ export default class CreateExercise extends Component{
           <div className='form-group'>
             <label>UserName: </label>
             <select
-              // ref="userInput"
               required
               className='form-control'
               value={this.state.username}
-              onChange={this.onChangeUsername}
+              onChange={(e) => this.setState({username: e.target.value})}
+              onFocus={() => this.setState({message: ""})}
             >
               {this.state.users.map((user) => {
                 return (
-                  <option
-                    key={user}
-                    value={user}
-                  >
+                  <option key={user} value={user}>
                     {user}
                   </option>
                 )
@@ -115,7 +79,8 @@ export default class CreateExercise extends Component{
               required
               className='form-control'
               value={this.state.description}
-              onChange={this.onChangeDescription}
+              onChange={(e) => this.setState({description: e.target.value})}
+              onFocus={() => this.setState({message: ""})}
             />
           </div>
           <div className='form-group'>     
@@ -125,22 +90,27 @@ export default class CreateExercise extends Component{
               required
               className='form-control'
               value={this.state.duration}
-              onChange={this.onChangeDuration}
+              onChange={(e) => this.setState({duration: e.target.value})}
+              onFocus={() => this.setState({message: ""})}
             />
           </div>
           <div className='form-group'>     
             <label>Date: </label>
             <DatePicker
               selected={this.state.date}
-              onChange={this.onChangeDate}
+              onChange={(date) => this.setState({date})}
+              onFocus={() => this.setState({message: ""})}
             />
           </div>
-
-          <div>
-            <input type="submit" value="Create Exercise Log" className="btn btn-primary"/>
+          <div className='mt-3'>
+            <input
+              type="submit"
+              value="Create Exercise Log"
+              className="btn btn-primary"
+            />
           </div>
-
         </form>
+        <h3>{this.state.message}</h3>
       </div>
     )
   }

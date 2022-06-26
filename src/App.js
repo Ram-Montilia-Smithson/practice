@@ -1,4 +1,3 @@
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import ExercisesList from './components/ExercisesList/ExercisesList';
@@ -7,7 +6,7 @@ import CreateUser from './components/CreateUser/CreateUser';
 import CreateExercise from './components/CreateExercise/CreateExercise';
 import Navbar from './components/Navbar/Navbar';
 
-function App() {
+export default function App() {
   return (
     <Router>
       <div className='container'>
@@ -23,5 +22,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;
